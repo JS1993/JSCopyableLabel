@@ -15,7 +15,7 @@
 }
 
 -(void)awakeFromNib{
-    [self awakeFromNib];
+    [super awakeFromNib];
     
     [self setUp];
 }
@@ -37,22 +37,32 @@
 }
 
 -(void)longPregress{
+    //成为第一响应者
+    [self becomeFirstResponder];
     //创建并设置菜单控制器
-    UIMenuController* menu=[[UIMenuController alloc]init];
-    UIMenuItem* itemCopy=[[UIMenuItem alloc]initWithTitle:@"复制" action:@selector(copy:)];
-    menu.menuItems=@[itemCopy];
+    UIMenuController* menu=[UIMenuController sharedMenuController];
     [menu setTargetRect:self.bounds inView:self];
     [menu setMenuVisible:YES animated:YES];
 }
 
--(void)copy:(UIMenuController*)menu{
-    //复制到剪贴板
-    UIPasteboard* pasteBoard=[UIPasteboard generalPasteboard];
-    pasteBoard.string=self.text;
+/**
+ * label能执行哪些操作(比如copy, paste等等)
+ * @return  YES:支持这种操作
+ */
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    if ( action == @selector(copy:)) return YES;
+    
+    return NO;
 }
 
--(BOOL)canPerformAction:(SEL)action withSender:(id)sender{
-    //仅可以复制
-    return @selector(copy:);
+
+- (void)copy:(UIMenuController *)menu
+{
+    // 将自己的文字复制到粘贴板
+    UIPasteboard *board = [UIPasteboard generalPasteboard];
+    board.string = self.text;
 }
+
+
 @end
